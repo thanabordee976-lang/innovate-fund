@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ร่วมทุนให้ชุมชน ติดตามหลักฐานและโหวตการจ่ายเงินในแต่ละระยะ"
+    />
+    <title>InnovateFund · ทุนเล็ก ๆ เพื่อการเปลี่ยนแปลง</title>
+    <link rel="stylesheet" href="styles.css?v=3" />
+    <script src="vendor/ethers.min.js" defer></script>
+    <script src="app.js?v=3" defer></script>
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="./" aria-label="InnovateFund หน้าแรก"
+        ><span class="brand-mark" aria-hidden="true">IF</span
+        ><span>Innovate<span class="brand-light">Fund</span></span></a
+      >
+      <nav aria-label="เมนูหลัก">
+        <button
+          id="discover-nav"
+          class="nav-link active"
+          type="button"
+          aria-pressed="true"
+        >
+          ค้นหาโครงการ</button
+        ><button
+          id="mine-nav"
+          class="nav-link"
+          type="button"
+          aria-pressed="false"
+        >
+          การสนับสนุนของฉัน
+        </button>
+      </nav>
+      <div class="wallet">
+        <span id="wallet-info">Sepolia</span
+        ><button id="wallet-button" class="button primary" type="button">
+          เชื่อม MetaMask <span aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </header>
+    <main class="wrap">
+      <p id="wallet-notice" class="notice" role="status" hidden></p>
+      <section class="hero" id="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">COMMUNITY-POWERED CHANGE</p>
+          <h1>
+            ก้าวเล็ก ๆ ของคุณ<br />เปลี่ยนชุมชนได้<span class="orange">.</span>
+          </h1>
+          <p class="hero-description">
+            ร่วมทุนในสิ่งที่เชื่อ แล้วติดตามทุกก้าว<br />ผ่านหลักฐานและการโหวตของผู้สนับสนุน
+          </p>
+          <div class="actions">
+            <button id="explore-button" class="button primary" type="button">
+              หาโครงการที่ใช่ <span aria-hidden="true">↘</span></button
+            ><button id="new-button" class="button text-button" type="button">
+              เริ่มโครงการของคุณ ↗
+            </button>
+          </div>
+          <p class="network-note">
+            <span class="status-dot"></span> ทดลองบน Ethereum Sepolia
+          </p>
+        </div>
+        <div class="hero-visual">
+          <img
+            src="assets/solar.jpg"
+            alt="แผงโซลาร์กลางแจ้งสำหรับผลิตพลังงานสะอาด"
+            width="1600"
+            height="1067"
+          />
+          <div class="image-caption">
+            <span>พลังงานสะอาด เริ่มได้ที่ชุมชน</span
+            ><span aria-hidden="true">↗</span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="create-panel"
+        class="card create"
+        aria-labelledby="create-title"
+        hidden
+      >
+        <div class="spread">
+          <div>
+            <p class="eyebrow">START SOMETHING GOOD</p>
+            <h2 id="create-title">เริ่มโครงการใหม่</h2>
+          </div>
+          <button id="close-create" class="button quiet" type="button">
+            ปิด ×
+          </button>
+        </div>
+        <ol class="stepper" aria-label="ขั้นตอนสร้างโครงการ">
+          <li data-step-indicator="0">ข้อมูลโครงการ</li>
+          <li data-step-indicator="1">แผนและงบ</li>
+          <li data-step-indicator="2">ตรวจทาน</li>
+        </ol>
+        <form id="create-form" novalidate>
+          <div data-create-step="0" class="grid-fields">
+            <label class="wide"
+              >ชื่อโครงการ<input
+                name="title"
+                maxlength="160"
+                placeholder="เช่น ห้องเรียนพลังงานแสงอาทิตย์"
+                required /></label
+            ><label
+              >เป้าหมาย (ETH)<input
+                name="goal"
+                inputmode="decimal"
+                placeholder="0.5"
+                required /></label
+            ><label
+              >วันสิ้นสุดระดมทุน<input
+                name="deadline"
+                type="datetime-local"
+                required
+            /></label>
+            <label
+              >หมวดหมู่<select name="category" required>
+                <option value="education">การศึกษา</option>
+                <option value="environment">สิ่งแวดล้อม</option>
+                <option value="technology">เทคโนโลยี</option>
+                <option value="community">ชุมชนและสังคม</option>
+              </select></label
+            >
+            <label
+              >ชื่อทีม<input
+                name="team"
+                maxlength="160"
+                placeholder="ทีมที่รับผิดชอบโครงการ"
+            /></label>
+            <label class="wide"
+              >เรื่องราวโครงการ<textarea
+                name="story"
+                maxlength="2400"
+                placeholder="ปัญหาที่อยากแก้ สิ่งที่จะทำ และใครจะได้รับประโยชน์"
+              ></textarea>
+            </label>
+            <label class="wide"
+              >ลิงก์รูปปก<input
+                name="coverUrl"
+                type="url"
+                maxlength="500"
+                placeholder="https://…"
+            /></label>
+            <p class="muted wide">
+              รายละเอียดเพิ่มเติมบันทึกแยกหลังสร้างโครงการ
+              คุณกลับมาแก้ไขได้ในหน้าโครงการ
+            </p>
+          </div>
+          <div data-create-step="1" hidden>
+            <div id="plan"></div>
+            <button id="add-plan" class="button secondary" type="button">
+              + เพิ่มระยะงาน
+            </button>
+            <p class="muted budget-note">
+              แบ่งงบให้ครบเป้าหมาย แต่ละระยะจ่ายเมื่อผ่านการโหวต
+            </p>
+          </div>
+          <div data-create-step="2" hidden>
+            <dl id="review-summary" class="review-summary"></dl>
+            <h3>แผนการจ่ายเงิน</h3>
+            <div id="review-plan"></div>
+          </div>
+          <p class="notice" id="create-notice" role="status" hidden></p>
+          <div class="wizard-actions">
+            <button
+              id="previous-step"
+              class="button quiet"
+              type="button"
+              hidden
+            >
+              ← ย้อนกลับ</button
+            ><button id="next-step" class="button primary" type="button">
+              ถัดไป →</button
+            ><button
+              id="save-campaign"
+              class="button primary"
+              type="submit"
+              hidden
+            >
+              ยืนยันสร้างโครงการ ↗
+            </button>
+          </div>
+        </form>
+      </section>
+      <template id="plan-template"
+        ><fieldset class="plan-row">
+          <legend></legend>
+          <div class="grid-fields">
+            <label class="wide"
+              >ชื่อระยะงาน<input
+                name="stageTitle"
+                maxlength="160"
+                placeholder="เช่น ติดตั้งระบบโซลาร์"
+                required /></label
+            ><label
+              >รายละเอียด<textarea
+                name="stageDetails"
+                maxlength="500"
+                placeholder="จะทำอะไร และส่งมอบอะไรบ้าง"
+                required
+              ></textarea></label
+            ><label
+              >งบ (ETH)<input
+                name="stageAmount"
+                inputmode="decimal"
+                placeholder="0.1"
+                required
+            /></label>
+          </div>
+          <button class="button quiet remove-plan" type="button">
+            ลบระยะนี้
+          </button>
+        </fieldset></template
+      >
+
+      <section class="catalog" id="catalog">
+        <div class="catalog-heading">
+          <div>
+            <p id="catalog-eyebrow" class="eyebrow">
+              FIND A PROJECT TO SUPPORT
+            </p>
+            <h2 id="catalog-title">ร่วมสร้างสิ่งดี ๆ ไปด้วยกัน</h2>
+          </div>
+          <form id="lookup-form">
+            <label class="sr-only" for="campaign-id">ค้นหา ID โครงการ</label
+            ><input
+              id="campaign-id"
+              placeholder="ค้นหา ID โครงการ"
+              inputmode="numeric"
+              required
+            /><button
+              class="button secondary"
+              type="submit"
+              aria-label="เปิดโครงการด้วย ID"
+            >
+              ค้นหา ↗
+            </button>
+          </form>
+        </div>
+        <p id="lookup-notice" class="notice" role="status" hidden></p>
+        <p id="catalog-notice" class="notice" role="status" hidden></p>
+        <div id="campaign-list" class="campaign-list"></div>
+        <button
+          id="more-campaigns"
+          class="button secondary"
+          type="button"
+          hidden
+        >
+          โหลดโครงการเพิ่ม ↓
+        </button>
+      </section>
+
+      <section
+        id="detail-panel"
+        class="detail-panel"
+        aria-label="รายละเอียดโครงการ"
+        hidden
+      >
+        <button id="back-projects" class="button text-button" type="button">
+          ← กลับไปดูโครงการ
+        </button>
+        <div class="project-layout">
+          <article class="card project-overview" id="campaign-panel" hidden>
+            <div class="spread campaign-heading">
+              <div>
+                <p id="campaign-tag" class="eyebrow"></p>
+                <h2 id="campaign-title"></h2>
+              </div>
+              <span class="badge" id="campaign-status"></span>
+            </div>
+            <p id="campaign-owner" class="muted break"></p>
+            <div class="progress">
+              <div class="spread">
+                <strong id="raised"></strong><span id="goal"></span>
+              </div>
+              <progress
+                id="progress"
+                max="100"
+                value="0"
+                aria-label="ความคืบหน้าการระดมทุน"
+              ></progress>
+              <div class="spread progress-meta">
+                <span id="deadline"></span><span id="countdown"></span>
+              </div>
+            </div>
+            <dl class="metrics" id="metrics"></dl>
+            <div id="funding-actions" hidden>
+              <form id="contribute-form" class="inline" hidden>
+                <label class="grow"
+                  >ร่วมสนับสนุน (ETH)<input
+                    name="amount"
+                    inputmode="decimal"
+                    placeholder="0.01"
+                    required /></label
+                ><button class="button primary" type="submit">
+                  ร่วมทุน ↗
+                </button>
+              </form>
+              <button
+                class="button secondary"
+                id="refund-button"
+                type="button"
+                hidden
+              >
+                รับเงินคืน
+              </button>
+              <p class="muted" id="your-funds"></p>
+            </div>
+            <p id="action-notice" class="notice" role="status" hidden></p>
+          </article>
+          <section class="card timeline-panel" id="milestone-panel" hidden>
+            <div class="section-header">
+              <p class="eyebrow">THE ROAD TO IMPACT</p>
+              <h2>ทุกก้าวมีคนติดตาม</h2>
+              <p class="muted">
+                เสียงเห็นชอบต้องเกิน 50% ของเงินสนับสนุนทั้งหมด
+              </p>
+            </div>
+            <ol id="milestones" class="milestones"></ol>
+          </section>
+        </div>
+        <section class="card story-panel" aria-labelledby="story-title">
+          <div class="spread">
+            <h2 id="story-title">เรื่องราวของโครงการ</h2>
+            <span id="project-category" class="badge" hidden></span>
+          </div>
+          <img
+            id="project-cover"
+            class="project-cover"
+            alt=""
+            hidden
+            referrerpolicy="no-referrer"
+          />
+          <p id="project-team" class="muted"></p>
+          <p id="project-story" class="long-copy"></p>
+          <p id="details-read-notice" class="notice" role="status" hidden></p>
+          <details id="details-editor" hidden>
+            <summary>แก้ไขข้อมูลโครงการ</summary>
+            <form id="details-form" class="grid-fields">
+              <label
+                >หมวดหมู่<select name="category">
+                  <option value="education">การศึกษา</option>
+                  <option value="environment">สิ่งแวดล้อม</option>
+                  <option value="technology">เทคโนโลยี</option>
+                  <option value="community">ชุมชนและสังคม</option>
+                </select></label
+              >
+              <label
+                >ชื่อทีม<input name="team" maxlength="160" required
+              /></label>
+              <label class="wide"
+                >เรื่องราว<textarea
+                  name="story"
+                  maxlength="2400"
+                  required
+                ></textarea>
+              </label>
+              <label class="wide"
+                >ลิงก์รูปปก<input
+                  name="coverUrl"
+                  type="url"
+                  maxlength="500"
+                  placeholder="https://…"
+              /></label>
+              <div class="wide">
+                <button id="save-details" class="button primary" type="submit">
+                  บันทึกข้อมูลโครงการ
+                </button>
+              </div>
+            </form>
+            <p id="details-notice" class="notice" role="status" hidden></p>
+          </details>
+        </section>
+        <section class="card updates-panel" aria-labelledby="updates-title">
+          <div class="spread">
+            <div>
+              <p class="eyebrow">PROJECT JOURNAL</p>
+              <h2 id="updates-title">ความคืบหน้าจากทีมงาน</h2>
+            </div>
+            <span id="updates-count" class="muted"></span>
+          </div>
+          <p class="muted">
+            รายงานความคืบหน้าใช้ติดตามงาน ส่วนการขอเบิกและลงคะแนนอยู่ในแต่ละ
+            Milestone
+          </p>
+          <form id="update-form" class="grid-fields" hidden>
+            <label class="wide"
+              >หัวข้อรายงาน<input name="updateTitle" maxlength="160" required
+            /></label>
+            <label class="wide"
+              >เล่าให้ผู้สนับสนุนฟัง<textarea
+                name="updateBody"
+                maxlength="2400"
+                required
+              ></textarea>
+            </label>
+            <label class="wide"
+              >ลิงก์รูปหรือหลักฐาน<input
+                name="evidenceUrl"
+                type="url"
+                maxlength="500"
+                placeholder="https://…"
+            /></label>
+            <div class="wide">
+              <button id="publish-update" class="button primary" type="submit">
+                เผยแพร่รายงาน
+              </button>
+            </div>
+          </form>
+          <p id="update-notice" class="notice" role="status" hidden></p>
+          <div id="updates-list" class="updates-list"></div>
+          <button
+            id="more-updates"
+            class="button secondary"
+            type="button"
+            hidden
+          >
+            ดูรายงานก่อนหน้า
+          </button>
+        </section>
+        <section class="card ledger-panel" id="ledger-panel" hidden>
+          <div class="spread">
+            <div>
+              <p class="eyebrow">FOLLOW THE FUNDS</p>
+              <h2>เงินทุกบาท มีที่มาและที่ไป</h2>
+            </div>
+            <span class="muted" id="ledger-count"></span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">รายการ</th>
+                  <th scope="col">กระเป๋า</th>
+                  <th scope="col">จำนวน</th>
+                  <th scope="col">เวลา</th>
+                </tr>
+              </thead>
+              <tbody id="ledger"></tbody>
+            </table>
+          </div>
+          <button class="button quiet" id="more-ledger" type="button" hidden>
+            ดูรายการก่อนหน้า
+          </button>
+          <p id="ledger-notice" class="notice" role="status" hidden></p>
+        </section>
+      </section>
+    </main>
+    <footer class="wrap footer">
+      <span class="footer-brand">InnovateFund<span class="orange">.</span></span
+      ><span>ทุนเล็ก ๆ เพื่อการเปลี่ยนแปลง</span><span>Ethereum Sepolia</span>
+    </footer>
+  </body>
+</html>
